@@ -61,8 +61,8 @@ function LibKeyBound:Initialize()
 		}
 		f:SetPoint('TOP', 0, -24)
 		f:Hide()
-		f:SetScript('OnShow', function() PlaySound('igCharacterInfoOpen') end)
-		f:SetScript('OnHide', function() PlaySound('igCharacterInfoClose') end)
+		f:SetScript('OnShow', function() PlaySound('igMainMenuOption') end)
+		f:SetScript('OnHide', function() PlaySound('gsTitleOptionExit') end)
 
 		local tr = f:CreateTitleRegion()
 		tr:SetAllPoints(f)
