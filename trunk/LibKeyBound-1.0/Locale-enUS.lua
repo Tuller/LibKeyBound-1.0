@@ -11,6 +11,7 @@ end
 LibKeyBoundBaseLocale10 = {
 	REVISION = 0;
 	BASEREVISION = REVISION;
+	BindingMode = "Binding Mode";
 	Enabled = 'Bindings mode enabled';
 	Disabled = 'Bindings mode disabled';
 	ClearTip = format('Press %s to clear all bindings', GetBindingText('ESCAPE', 'KEY_'));
