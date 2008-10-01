@@ -9,8 +9,8 @@ Description: An intuitive keybindings system: mouseover frame, click keys or but
 Dependencies: CallbackHandler-1.0
 --]]
 
-local MAJOR = "LibKeyBound-1.0"
-local MINOR = "$Revision$"
+local MAJOR = 'LibKeyBound-1.0'
+local MINOR = 90000
 
 --[[
 	LibKeyBound-1.0
@@ -34,7 +34,7 @@ if not LibKeyBound then return end -- no upgrade needed
 local _G = _G
 
 -- CallbackHandler
-LibKeyBound.events = LibKeyBound.events or _G.LibStub("CallbackHandler-1.0"):New(LibKeyBound)
+LibKeyBound.events = LibKeyBound.events or _G.LibStub('CallbackHandler-1.0'):New(LibKeyBound)
 
 local L = LibKeyBoundLocale10
 LibKeyBound.L = L
@@ -44,120 +44,121 @@ LibKeyBound.Binder = LibKeyBound.Binder or {}
 -- #NODOC
 function LibKeyBound:Initialize()
 	do
-		local f = CreateFrame("Frame", "KeyboundDialog", UIParent)
-		f:SetFrameStrata("DIALOG")
-		f:SetToplevel(true); f:EnableMouse(true)
-		f:SetWidth(360); f:SetHeight(140)
+		local f = CreateFrame('Frame', 'KeyboundDialog', UIParent)
+		f:SetFrameStrata('DIALOG')
+		f:SetToplevel(true) 
+		f:EnableMouse(true)
+		f:SetClampedToScreen(true)
+		f:SetWidth(360)
+		f:SetHeight(140)
 		f:SetBackdrop{
-			bgFile="Interface\\DialogFrame\\UI-DialogBox-Background" ,
-			edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border",
+			bgFile='Interface\\DialogFrame\\UI-DialogBox-Background' ,
+			edgeFile='Interface\\DialogFrame\\UI-DialogBox-Border',
 			tile = true,
 			insets = {left = 11, right = 12, top = 12, bottom = 11},
 			tileSize = 32,
 			edgeSize = 32,
 		}
-		f:SetPoint("TOP", 0, -24)
+		f:SetPoint('TOP', 0, -24)
 		f:Hide()
+		f:SetScript('OnShow', function() PlaySound('igCharacterInfoOpen') end)
+		f:SetScript('OnHide', function() PlaySound('igCharacterInfoClose') end)
 
 		local tr = f:CreateTitleRegion()
 		tr:SetAllPoints(f)
-		f:SetClampedToScreen(true)
+		
+		local header = f:CreateTexture(nil, 'ARTWORK')
+		header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
+		header:SetWidth(256); header:SetHeight(64)
+		header:SetPoint('TOP', 0, 12)
+		
+		local title = f:CreateFontString('ARTWORK')
+		title:SetFontObject('GameFontNormal')
+		title:SetPoint('TOP', header, 'TOP', 0, -14)
+		title:SetText(L.BindingMode)
 
-		local text = f:CreateFontString("ARTWORK")
-		text:SetFontObject("GameFontHighlight")
-		text:SetPoint("TOP", 0, -16)
-		text:SetWidth(252); text:SetHeight(0)
-		text:SetText(format(L.BindingsHelp, GetBindingText("ESCAPE", "KEY_")))
+		local desc = f:CreateFontString('ARTWORK')
+		desc:SetFontObject('GameFontHighlight')
+		desc:SetJustifyV('TOP')
+		desc:SetJustifyH('LEFT')
+		desc:SetPoint('TOPLEFT', 18, -32)
+		desc:SetPoint('BOTTOMRIGHT', -18, 48)
+		desc:SetText(format(L.BindingsHelp, GetBindingText('ESCAPE', 'KEY_')))
 
 		-- Per character bindings checkbox
-		local perChar = CreateFrame("CheckButton", "KeyboundDialogCheck", f, "OptionsCheckButtonTemplate")
-		getglobal(perChar:GetName() .. "Text"):SetText(CHARACTER_SPECIFIC_KEYBINDINGS)
+		local perChar = CreateFrame('CheckButton', 'KeyboundDialogCheck', f, 'OptionsCheckButtonTemplate')
+		_G[perChar:GetName() .. 'Text']:SetText(CHARACTER_SPECIFIC_KEYBINDINGS)
 
-		perChar:SetScript("OnShow", function(self)
+		perChar:SetScript('OnShow', function(self)
 			self:SetChecked(GetCurrentBindingSet() == 2)
 		end)
 
 		local current
-		perChar:SetScript("OnClick", function(self)
+		perChar:SetScript('OnClick', function(self)
 			current = (perChar:GetChecked() and 2) or 1
 			LoadBindings(current)
 		end)
 
---		local added
-		f:SetScript("OnShow", function(self)
---			if (not added) then
---				UISpecialFrames[#UISpecialFrames + 1] = self:GetName()
---				added = true
---			end
---			PlaySound("igCharacterInfoOpen")
-		end)
-		f:SetScript("OnHide", function(self)
---			PlaySound("igCharacterInfoClose")
-		end)
-
 		-- Okay bindings checkbox
-		local okayBindings = CreateFrame("CheckButton", "KeyboundDialogOkay", f, "OptionsButtonTemplate")
-		getglobal(okayBindings:GetName() .. "Text"):SetText(OKAY)
-		okayBindings:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -12, 14)
+		local okayBindings = CreateFrame('CheckButton', 'KeyboundDialogOkay', f, 'OptionsButtonTemplate')
+		getglobal(okayBindings:GetName() .. 'Text'):SetText(OKAY)
 
-		okayBindings:SetScript("OnClick", function(self)
+		okayBindings:SetScript('OnClick', function(self)
 			current = (perChar:GetChecked() and 2) or 1
 			if InCombatLockdown() then
-				self:RegisterEvent("PLAYER_REGEN_ENABLED")
+				self:RegisterEvent('PLAYER_REGEN_ENABLED')
 			else
---				DEFAULT_CHAT_FRAME:AddMessage("okayBindings " .. tostring(current))
 				SaveBindings(current)
 				LibKeyBound:Deactivate()
 			end
 		end)
 
-		okayBindings:SetScript("OnHide", function(self)
+		okayBindings:SetScript('OnHide', function(self)
 			current = (perChar:GetChecked() and 2) or 1
 			if InCombatLockdown() then
-				self:RegisterEvent("PLAYER_REGEN_ENABLED")
+				self:RegisterEvent('PLAYER_REGEN_ENABLED')
 			else
 				SaveBindings(current)
 			end
 		end)
 
-		okayBindings:SetScript("OnEvent", function(self, event)
---			DEFAULT_CHAT_FRAME:AddMessage("okayBindings delayed " .. tostring(current))
+		okayBindings:SetScript('OnEvent', function(self, event)
 			SaveBindings(current)
 			self:UnregisterEvent(event)
 			LibKeyBound:Deactivate()
 		end)
 
 		-- Cancel bindings checkbox
-		local cancelBindings = CreateFrame("CheckButton", "KeyboundDialogCancel", f, "OptionsButtonTemplate")
-		getglobal(cancelBindings:GetName() .. "Text"):SetText(CANCEL)
-		cancelBindings:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 12, 14)
+		local cancelBindings = CreateFrame('CheckButton', 'KeyboundDialogCancel', f, 'OptionsButtonTemplate')
+		getglobal(cancelBindings:GetName() .. 'Text'):SetText(CANCEL)
 
-		cancelBindings:SetScript("OnClick", function(self)
+		cancelBindings:SetScript('OnClick', function(self)
 			if InCombatLockdown() then
-				self:RegisterEvent("PLAYER_REGEN_ENABLED")
+				self:RegisterEvent('PLAYER_REGEN_ENABLED')
 			else
---				DEFAULT_CHAT_FRAME:AddMessage("cancelBindings ")
 				LoadBindings(GetCurrentBindingSet())
 				LibKeyBound:Deactivate()
 			end
 		end)
 
-		cancelBindings:SetScript("OnEvent", function(self, event)
---			DEFAULT_CHAT_FRAME:AddMessage("cancelBindings delayed ")
+		cancelBindings:SetScript('OnEvent', function(self, event)
 			LoadBindings(GetCurrentBindingSet())
 			self:UnregisterEvent(event)
 			LibKeyBound:Deactivate()
 		end)
 
-		perChar:SetPoint("BOTTOMLEFT", cancelBindings, "TOPLEFT", 0, 4)
+		--position buttons
+		perChar:SetPoint('BOTTOMLEFT', 14, 32)
+		cancelBindings:SetPoint('BOTTOMRIGHT', -14, 14)
+		okayBindings:SetPoint('RIGHT', cancelBindings, 'LEFT')
 
 		self.dialog = f
 	end
 
-	SlashCmdList["LibKeyBoundSlashCOMMAND"] = function() self:Toggle() end
-	SLASH_LibKeyBoundSlashCOMMAND1 = "/libkeybound"
-	SLASH_LibKeyBoundSlashCOMMAND2 = "/kb"
-	SLASH_LibKeyBoundSlashCOMMAND3 = "/lkb"
+	SlashCmdList['LibKeyBoundSlashCOMMAND'] = function() self:Toggle() end
+	SLASH_LibKeyBoundSlashCOMMAND1 = '/libkeybound'
+	SLASH_LibKeyBoundSlashCOMMAND2 = '/kb'
+	SLASH_LibKeyBoundSlashCOMMAND3 = '/lkb'
 
 	LibKeyBound.initialized = true
 end
@@ -193,7 +194,7 @@ function LibKeyBound:SetColorKeyBoundMode(r, g, b, a)
 	LibKeyBound.colorKeyBoundMode[2] = g
 	LibKeyBound.colorKeyBoundMode[3] = b
 	LibKeyBound.colorKeyBoundMode[4] = a
-	LibKeyBound.events:Fire("LIBKEYBOUND_MODE_COLOR_CHANGED")
+	LibKeyBound.events:Fire('LIBKEYBOUND_MODE_COLOR_CHANGED')
 end
 
 --[[
@@ -240,7 +241,7 @@ Notes:
 	* Switches KeyBound Mode between on and off
 
 Example:
-	local LibKeyBound = LibStub("LibKeyBound-1.0")
+	local LibKeyBound = LibStub('LibKeyBound-1.0')
  	LibKeyBound:Toggle()
 --]]
 function LibKeyBound:Toggle()
@@ -257,7 +258,7 @@ Notes:
 	* Switches KeyBound Mode to on
 
 Example:
-	local LibKeyBound = LibStub("LibKeyBound-1.0")
+	local LibKeyBound = LibStub('LibKeyBound-1.0')
  	LibKeyBound:Activate()
 --]]
 function LibKeyBound:Activate()
@@ -271,7 +272,7 @@ function LibKeyBound:Activate()
 			end
 			self:Set(nil)
 			self.dialog:Show()
-			self.events:Fire("LIBKEYBOUND_ENABLED")
+			self.events:Fire('LIBKEYBOUND_ENABLED')
 		end
 	end
 end
@@ -282,7 +283,7 @@ Notes:
 	* Switches KeyBound Mode to off
 
 Example:
-	local LibKeyBound = LibStub("LibKeyBound-1.0")
+	local LibKeyBound = LibStub('LibKeyBound-1.0')
  	LibKeyBound:Deactivate()
 --]]
 function LibKeyBound:Deactivate()
@@ -291,7 +292,7 @@ function LibKeyBound:Deactivate()
 		self:Set(nil)
 		self.dialog:Hide()
 
-		self.events:Fire("LIBKEYBOUND_DISABLED")
+		self.events:Fire('LIBKEYBOUND_DISABLED')
 	end
 end
 
@@ -301,7 +302,7 @@ Returns:
 	boolean - true if KeyBound Mode is currently on
 
 Example:
-	local LibKeyBound = LibStub("LibKeyBound-1.0")
+	local LibKeyBound = LibStub('LibKeyBound-1.0')
  	local isKeyBoundMode = LibKeyBound:IsShown()
  	if (isKeyBoundMode) then
  		-- Do something
@@ -338,10 +339,10 @@ function LibKeyBound:Set(button)
 		bindFrame.button = button
 		bindFrame:SetAllPoints(button)
 
-		bindFrame.text:SetFontObject("GameFontNormalLarge")
+		bindFrame.text:SetFontObject('GameFontNormalLarge')
 		bindFrame.text:SetText(button:GetHotkey())
 		if bindFrame.text:GetStringWidth() > bindFrame:GetWidth() then
-			bindFrame.text:SetFontObject("GameFontNormal")
+			bindFrame.text:SetFontObject('GameFontNormal')
 		end
 		bindFrame:Show()
 		bindFrame:OnEnter()
@@ -373,40 +374,40 @@ Notes:
 function LibKeyBound:ToShortKey(key)
 	if key then
 		key = key:upper()
-		key = key:gsub(" ", "")
-		key = key:gsub("ALT%-", L["Alt"])
-		key = key:gsub("CTRL%-", L["Ctrl"])
-		key = key:gsub("SHIFT%-", L["Shift"])
-		key = key:gsub("NUMPAD", L["NumPad"])
+		key = key:gsub(' ', '')
+		key = key:gsub('ALT%-', L['Alt'])
+		key = key:gsub('CTRL%-', L['Ctrl'])
+		key = key:gsub('SHIFT%-', L['Shift'])
+		key = key:gsub('NUMPAD', L['NumPad'])
 
-		key = key:gsub("PLUS", "%+")
-		key = key:gsub("MINUS", "%-")
-		key = key:gsub("MULTIPLY", "%*")
-		key = key:gsub("DIVIDE", "%/")
+		key = key:gsub('PLUS', '%+')
+		key = key:gsub('MINUS', '%-')
+		key = key:gsub('MULTIPLY', '%*')
+		key = key:gsub('DIVIDE', '%/')
 
-		key = key:gsub("BACKSPACE", L["Backspace"])
-		key = key:gsub("BUTTON3", L["Button3"])
-		key = key:gsub("BUTTON4", L["Button4"])
-		key = key:gsub("BUTTON5", L["Button5"])
-		key = key:gsub("CAPSLOCK", L["Capslock"])
-		key = key:gsub("CLEAR", L["Clear"])
-		key = key:gsub("DELETE", L["Delete"])
-		key = key:gsub("END", L["End"])
-		key = key:gsub("HOME", L["Home"])
-		key = key:gsub("INSERT", L["Insert"])
-		key = key:gsub("MOUSEWHEELDOWN", L["Mouse Wheel Down"])
-		key = key:gsub("MOUSEWHEELUP", L["Mouse Wheel Up"])
-		key = key:gsub("NUMLOCK", L["Num Lock"])
-		key = key:gsub("PAGEDOWN", L["Page Down"])
-		key = key:gsub("PAGEUP", L["Page Up"])
-		key = key:gsub("SCROLLLOCK", L["Scroll Lock"])
-		key = key:gsub("SPACEBAR", L["Spacebar"])
-		key = key:gsub("TAB", L["Tab"])
+		key = key:gsub('BACKSPACE', L['Backspace'])
+		key = key:gsub('BUTTON3', L['Button3'])
+		key = key:gsub('BUTTON4', L['Button4'])
+		key = key:gsub('BUTTON5', L['Button5'])
+		key = key:gsub('CAPSLOCK', L['Capslock'])
+		key = key:gsub('CLEAR', L['Clear'])
+		key = key:gsub('DELETE', L['Delete'])
+		key = key:gsub('END', L['End'])
+		key = key:gsub('HOME', L['Home'])
+		key = key:gsub('INSERT', L['Insert'])
+		key = key:gsub('MOUSEWHEELDOWN', L['Mouse Wheel Down'])
+		key = key:gsub('MOUSEWHEELUP', L['Mouse Wheel Up'])
+		key = key:gsub('NUMLOCK', L['Num Lock'])
+		key = key:gsub('PAGEDOWN', L['Page Down'])
+		key = key:gsub('PAGEUP', L['Page Up'])
+		key = key:gsub('SCROLLLOCK', L['Scroll Lock'])
+		key = key:gsub('SPACEBAR', L['Spacebar'])
+		key = key:gsub('TAB', L['Tab'])
 
-		key = key:gsub("DOWNARROW", L["Down Arrow"])
-		key = key:gsub("LEFTARROW", L["Left Arrow"])
-		key = key:gsub("RIGHTARROW", L["Right Arrow"])
-		key = key:gsub("UPARROW", L["Up Arrow"])
+		key = key:gsub('DOWNARROW', L['Down Arrow'])
+		key = key:gsub('LEFTARROW', L['Left Arrow'])
+		key = key:gsub('RIGHTARROW', L['Right Arrow'])
+		key = key:gsub('UPARROW', L['Up Arrow'])
 
 		return key
 	end
@@ -416,9 +417,9 @@ end
 --[[ Binder Widget ]]--
 
 function LibKeyBound.Binder:Create()
-	local binder = CreateFrame("Button")
-	binder:RegisterForClicks("anyUp")
-	binder:SetFrameStrata("DIALOG")
+	local binder = CreateFrame('Button')
+	binder:RegisterForClicks('anyUp')
+	binder:SetFrameStrata('DIALOG')
 	binder:EnableKeyboard(true)
 	binder:EnableMouseWheel(true)
 
@@ -430,18 +431,18 @@ function LibKeyBound.Binder:Create()
 	bg:SetTexture(0, 0, 0, 0.5)
 	bg:SetAllPoints(binder)
 
-	local text = binder:CreateFontString("OVERLAY")
-	text:SetFontObject("GameFontNormalLarge")
+	local text = binder:CreateFontString('OVERLAY')
+	text:SetFontObject('GameFontNormalLarge')
 	text:SetTextColor(0, 1, 0)
 	text:SetAllPoints(binder)
 	binder.text = text
 
-	binder:SetScript("OnClick", self.OnKeyDown)
-	binder:SetScript("OnKeyDown", self.OnKeyDown)
-	binder:SetScript("OnMouseWheel", self.OnMouseWheel)
-	binder:SetScript("OnEnter", self.OnEnter)
-	binder:SetScript("OnLeave", self.OnLeave)
-	binder:SetScript("OnHide", self.OnHide)
+	binder:SetScript('OnClick', self.OnKeyDown)
+	binder:SetScript('OnKeyDown', self.OnKeyDown)
+	binder:SetScript('OnMouseWheel', self.OnMouseWheel)
+	binder:SetScript('OnEnter', self.OnEnter)
+	binder:SetScript('OnLeave', self.OnLeave)
+	binder:SetScript('OnHide', self.OnHide)
 	binder:Hide()
 
 	return binder
@@ -455,46 +456,46 @@ function LibKeyBound.Binder:OnKeyDown(key)
 	local button = self.button
 	if not button then return end
 
-	if (key == "UNKNOWN" or key == "LSHIFT" or key == "RSHIFT" or
-		key == "LCTRL" or key == "RCTRL" or key == "LALT" or key == "RALT" or
-		key == "LeftButton" or key == "RightButton") then
+	if (key == 'UNKNOWN' or key == 'LSHIFT' or key == 'RSHIFT' or
+		key == 'LCTRL' or key == 'RCTRL' or key == 'LALT' or key == 'RALT' or
+		key == 'LeftButton' or key == 'RightButton') then
 		return
 	end
 
-	local screenshotKey = GetBindingKey("SCREENSHOT")
+	local screenshotKey = GetBindingKey('SCREENSHOT')
 	if screenshotKey and key == screenshotKey then
 		Screenshot()
 		return
 	end
 
-	local openChatKey = GetBindingKey("OPENCHAT")
+	local openChatKey = GetBindingKey('OPENCHAT')
 	if openChatKey and key == openChatKey then
 		ChatFrameEditBox:Show()
 		return
 	end
 
-	if key == "MiddleButton" then
-		key = "BUTTON3"
-	elseif key == "Button4" then
-		key = "BUTTON4"
-	elseif key == "Button5" then
-		key = "BUTTON5"
+	if key == 'MiddleButton' then
+		key = 'BUTTON3'
+	elseif key == 'Button4' then
+		key = 'BUTTON4'
+	elseif key == 'Button5' then
+		key = 'BUTTON5'
 	end
 
-	if key == "ESCAPE" then
+	if key == 'ESCAPE' then
 		self:ClearBindings(button)
 		LibKeyBound:Set(button)
 		return
 	end
 
 	if IsShiftKeyDown() then
-		key = "SHIFT-" .. key
+		key = 'SHIFT-' .. key
 	end
 	if IsControlKeyDown() then
-		key = "CTRL-" .. key
+		key = 'CTRL-' .. key
 	end
 	if IsAltKeyDown() then
-		key = "ALT-" .. key
+		key = 'ALT-' .. key
 	end
 
 	if MouseIsOver(button) then
@@ -505,9 +506,9 @@ end
 
 function LibKeyBound.Binder:OnMouseWheel(arg1)
 	if arg1 > 0 then
-		self:OnKeyDown("MOUSEWHEELUP")
+		self:OnKeyDown('MOUSEWHEELUP')
 	else
-		self:OnKeyDown("MOUSEWHEELDOWN")
+		self:OnKeyDown('MOUSEWHEELDOWN')
 	end
 end
 
@@ -515,9 +516,9 @@ function LibKeyBound.Binder:OnEnter()
 	local button = self.button
 	if button and not InCombatLockdown() then
 		if self:GetRight() >= (GetScreenWidth() / 2) then
-			GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+			GameTooltip:SetOwner(self, 'ANCHOR_LEFT')
 		else
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+			GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		end
 
 		if button.GetActionName then
@@ -548,7 +549,7 @@ end
 --[[ Update Functions ]]--
 
 function LibKeyBound.Binder:ToBinding(button)
-	return format("CLICK %s:LeftButton", button:GetName())
+	return format('CLICK %s:LeftButton', button:GetName())
 end
 
 function LibKeyBound.Binder:FreeKey(button, key)
@@ -556,12 +557,12 @@ function LibKeyBound.Binder:FreeKey(button, key)
 	if button.FreeKey then
 		local action = button:FreeKey(key)
 		if button:FreeKey(key) then
-			msg = format(L.UnboundKey, GetBindingText(key, "KEY_"), action)
+			msg = format(L.UnboundKey, GetBindingText(key, 'KEY_'), action)
 		end
 	else
 		local action = GetBindingAction(key)
-		if action and action ~= "" and action ~= self:ToBinding(button) then
-			msg = format(L.UnboundKey, GetBindingText(key, "KEY_"), action)
+		if action and action ~= '' and action ~= self:ToBinding(button) then
+			msg = format(L.UnboundKey, GetBindingText(key, 'KEY_'), action)
 		end
 	end
 
@@ -579,14 +580,14 @@ function LibKeyBound.Binder:SetKey(button, key)
 		if button.SetKey then
 			button:SetKey(key)
 		else
-			SetBindingClick(key, button:GetName(), "LeftButton")
+			SetBindingClick(key, button:GetName(), 'LeftButton')
 		end
 
 		local msg
 		if button.GetActionName then
-			msg = format(L.BoundKey, GetBindingText(key, "KEY_"), button:GetActionName())
+			msg = format(L.BoundKey, GetBindingText(key, 'KEY_'), button:GetActionName())
 		else
-			msg = format(L.BoundKey, GetBindingText(key, "KEY_"), button:GetName())
+			msg = format(L.BoundKey, GetBindingText(key, 'KEY_'), button:GetName())
 		end
 		UIErrorsFrame:AddMessage(msg, 1, 1, 1, 1, UIERRORS_HOLD_TIME)
 	end
@@ -622,38 +623,38 @@ function LibKeyBound.Binder:GetBindings(button)
 
 	local keys
 	local binding = self:ToBinding(button)
-	for i = 1, select("#", GetBindingKey(binding)) do
+	for i = 1, select('#', GetBindingKey(binding)) do
 		local hotKey = select(i, GetBindingKey(binding))
 		if keys then
-			keys = keys .. ", " .. GetBindingText(hotKey, "KEY_")
+			keys = keys .. ', ' .. GetBindingText(hotKey, 'KEY_')
 		else
-			keys = GetBindingText(hotKey, "KEY_")
+			keys = GetBindingText(hotKey, 'KEY_')
 		end
 	end
 
 	return keys
 end
 
-LibKeyBound.EventButton = LibKeyBound.EventButton or CreateFrame("Frame")
+LibKeyBound.EventButton = LibKeyBound.EventButton or CreateFrame('Frame')
 do
 	local EventButton = LibKeyBound.EventButton
 	EventButton:UnregisterAllEvents()
-	EventButton:SetScript("OnEvent", function(self, event, addon)
-		if (event == "PLAYER_REGEN_DISABLED") then
+	EventButton:SetScript('OnEvent', function(self, event, addon)
+		if (event == 'PLAYER_REGEN_DISABLED') then
 			LibKeyBound:PLAYER_REGEN_DISABLED()
-		elseif (event == "PLAYER_REGEN_ENABLED") then
+		elseif (event == 'PLAYER_REGEN_ENABLED') then
 			LibKeyBound:PLAYER_REGEN_ENABLED()
-		elseif (event == "PLAYER_LOGIN" and not LibKeyBound.initialized) then
+		elseif (event == 'PLAYER_LOGIN' and not LibKeyBound.initialized) then
 			LibKeyBound:Initialize()
-			EventButton:UnregisterEvent("PLAYER_LOGIN")
+			EventButton:UnregisterEvent('PLAYER_LOGIN')
 		end
 	end)
 
 	if IsLoggedIn() and not LibKeyBound.initialized then
 		LibKeyBound:Initialize()
 	elseif not LibKeyBound.initialized then
-		EventButton:RegisterEvent("PLAYER_LOGIN")
+		EventButton:RegisterEvent('PLAYER_LOGIN')
 	end
-	EventButton:RegisterEvent("PLAYER_REGEN_ENABLED")
-	EventButton:RegisterEvent("PLAYER_REGEN_DISABLED")
+	EventButton:RegisterEvent('PLAYER_REGEN_ENABLED')
+	EventButton:RegisterEvent('PLAYER_REGEN_DISABLED')
 end
