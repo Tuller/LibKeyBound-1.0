@@ -1,4 +1,4 @@
-﻿## Interface: 20400
+﻿## Interface: 30000
 ## Title: Lib: LibKeyBound-1.0
 ## Notes: An intuitive keybindings library.
 ## Notes-deDE: LibKeyBound ist eine Bibliothek, die bei der keybindings helfen.
