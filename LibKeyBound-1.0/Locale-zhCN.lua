@@ -14,6 +14,7 @@ end
 
 LibKeyBoundLocale10 = {
 	REVISION = REVISION;
+	BindingMode = "Binding Mode";
 	Enabled = "按键绑定模式已启用";
 	Disabled = "按键绑定模式已禁用";
 	ClearTip = format("按 %s 清除所有绑定", GetBindingText("ESCAPE", "KEY_"));
@@ -24,7 +25,7 @@ LibKeyBoundLocale10 = {
 	CannotBindInCombat = "不能在战斗状态绑定按键";
 	CombatBindingsEnabled = "离开战斗状态, 按键绑定模式已启用";
 	CombatBindingsDisabled = "进入战斗状态, 按键绑定模式已禁用";
-	BindingsHelp = "将鼠标停留在按钮上, 然后按下欲指定快捷键之后就能绑定。  要清除目前绑定的按钮请按";
+	BindingsHelp = "将鼠标停留在按钮上, 然后按下欲指定快捷键之后就能绑定。  要清除目前绑定的按钮请按 %s.";
 
 	-- This is the short display version you see on the Button
 	["Alt"] = "A",
