@@ -32,6 +32,7 @@ local LibKeyBound, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 if not LibKeyBound then return end -- no upgrade needed
 
 local _G = _G
+local NUM_MOUSE_BUTTONS = 15
 
 -- CallbackHandler
 LibKeyBound.events = LibKeyBound.events or _G.LibStub('CallbackHandler-1.0'):New(LibKeyBound)
@@ -46,7 +47,7 @@ function LibKeyBound:Initialize()
 	do
 		local f = CreateFrame('Frame', 'KeyboundDialog', UIParent)
 		f:SetFrameStrata('DIALOG')
-		f:SetToplevel(true) 
+		f:SetToplevel(true)
 		f:EnableMouse(true)
 		f:SetClampedToScreen(true)
 		f:SetWidth(360)
@@ -66,12 +67,12 @@ function LibKeyBound:Initialize()
 
 		local tr = f:CreateTitleRegion()
 		tr:SetAllPoints(f)
-		
+
 		local header = f:CreateTexture(nil, 'ARTWORK')
 		header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
 		header:SetWidth(256); header:SetHeight(64)
 		header:SetPoint('TOP', 0, 12)
-		
+
 		local title = f:CreateFontString('ARTWORK')
 		title:SetFontObject('GameFontNormal')
 		title:SetPoint('TOP', header, 'TOP', 0, -14)
@@ -386,9 +387,11 @@ function LibKeyBound:ToShortKey(key)
 		key = key:gsub('DIVIDE', '%/')
 
 		key = key:gsub('BACKSPACE', L['Backspace'])
-		key = key:gsub('BUTTON3', L['Button3'])
-		key = key:gsub('BUTTON4', L['Button4'])
-		key = key:gsub('BUTTON5', L['Button5'])
+		
+		for i = 1, NUM_MOUSE_BUTTONS do
+			key = key:gsub('BUTTON' .. i, L['Button' .. i])
+		end
+
 		key = key:gsub('CAPSLOCK', L['Capslock'])
 		key = key:gsub('CLEAR', L['Clear'])
 		key = key:gsub('DELETE', L['Delete'])
@@ -480,6 +483,26 @@ function LibKeyBound.Binder:OnKeyDown(key)
 		key = 'BUTTON4'
 	elseif key == 'Button5' then
 		key = 'BUTTON5'
+	elseif key == 'Button6' then
+		key = 'BUTTON6'
+	elseif key == 'Button7' then
+		key = 'BUTTON7'
+	elseif key == 'Button8' then
+		key = 'BUTTON8'
+	elseif key == 'Button9' then
+		key = 'BUTTON9'
+	elseif key == 'Button10' then
+		key = 'BUTTON10'
+	elseif key == 'Button11' then
+		key = 'BUTTON11'
+	elseif key == 'Button12' then
+		key = 'BUTTON12'
+	elseif key == 'Button13' then
+		key = 'BUTTON13'
+	elseif key == 'Button14' then
+		key = 'BUTTON14'
+	elseif key == 'Button15' then
+		key = 'BUTTON15'
 	end
 
 	if key == 'ESCAPE' then
