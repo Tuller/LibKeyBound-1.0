@@ -47,7 +47,7 @@ function LibKeyBound:Initialize()
 	do
 		local f = CreateFrame('Frame', 'KeyboundDialog', UIParent)
 		f:SetFrameStrata('DIALOG')
-		f:SetToplevel(true)
+		f:SetToplevel(true) 
 		f:EnableMouse(true)
 		f:SetClampedToScreen(true)
 		f:SetWidth(360)
@@ -67,12 +67,12 @@ function LibKeyBound:Initialize()
 
 		local tr = f:CreateTitleRegion()
 		tr:SetAllPoints(f)
-
+		
 		local header = f:CreateTexture(nil, 'ARTWORK')
 		header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
 		header:SetWidth(256); header:SetHeight(64)
 		header:SetPoint('TOP', 0, 12)
-
+		
 		local title = f:CreateFontString('ARTWORK')
 		title:SetFontObject('GameFontNormal')
 		title:SetPoint('TOP', header, 'TOP', 0, -14)
@@ -460,8 +460,7 @@ function LibKeyBound.Binder:OnKeyDown(key)
 	if not button then return end
 
 	if (key == 'UNKNOWN' or key == 'LSHIFT' or key == 'RSHIFT' or
-		key == 'LCTRL' or key == 'RCTRL' or key == 'LALT' or key == 'RALT' or
-		key == 'LeftButton' or key == 'RightButton') then
+		key == 'LCTRL' or key == 'RCTRL' or key == 'LALT' or key == 'RALT') then
 		return
 	end
 
@@ -511,14 +510,25 @@ function LibKeyBound.Binder:OnKeyDown(key)
 		return
 	end
 
-	if IsShiftKeyDown() then
-		key = 'SHIFT-' .. key
-	end
-	if IsControlKeyDown() then
-		key = 'CTRL-' .. key
-	end
-	if IsAltKeyDown() then
-		key = 'ALT-' .. key
+	if (IsModifierKeyDown()) then
+		if (key == 'LeftButton') then
+			key = 'BUTTON1'
+		elseif (key == 'RightButton') then
+			key = 'BUTTON2'
+		end
+
+		if IsShiftKeyDown() then
+			key = 'SHIFT-' .. key
+		end
+		if IsControlKeyDown() then
+			key = 'CTRL-' .. key
+		end
+		if IsAltKeyDown() then
+			key = 'ALT-' .. key
+		end
+	elseif (key == 'LeftButton' or key == 'RightButton') then
+		-- dont bind unmodified left or right button
+		return
 	end
 
 	if MouseIsOver(button) then
