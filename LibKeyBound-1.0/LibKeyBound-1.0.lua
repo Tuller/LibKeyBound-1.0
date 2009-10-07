@@ -32,7 +32,7 @@ local LibKeyBound, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 if not LibKeyBound then return end -- no upgrade needed
 
 local _G = _G
-local NUM_MOUSE_BUTTONS = 15
+local NUM_MOUSE_BUTTONS = 31
 
 -- CallbackHandler
 LibKeyBound.events = LibKeyBound.events or _G.LibStub('CallbackHandler-1.0'):New(LibKeyBound)
