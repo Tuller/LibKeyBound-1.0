@@ -511,7 +511,7 @@ function LibKeyBound.Binder:OnKeyDown(key)
 		end
 	end
 
-	if MouseIsOver(button) then
+	if button:IsMouseOver() then
 		self:SetKey(button, key)
 		LibKeyBound:Set(button)
 	end
