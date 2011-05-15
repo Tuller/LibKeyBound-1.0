@@ -405,6 +405,7 @@ function LibKeyBound:ToShortKey(key)
 		key = key:gsub('PAGEUP', L['Page Up'])
 		key = key:gsub('SCROLLLOCK', L['Scroll Lock'])
 		key = key:gsub('SPACEBAR', L['Spacebar'])
+		key = key:gsub('SPACE', L['Spacebar'])
 		key = key:gsub('TAB', L['Tab'])
 
 		key = key:gsub('DOWNARROW', L['Down Arrow'])
