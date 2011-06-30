@@ -1,4 +1,4 @@
-﻿## Interface: 30000
+﻿## Interface: 40200
 ## LoadOnDemand: 1
 ## Title: Lib: LibKeyBound-1.0
 ## Notes: An intuitive keybindings library.
@@ -12,7 +12,7 @@
 ## X-Website: http://www.wowace.com/wiki/LibKeyBound-1.0
 ## X-AceForum: 9752
 ## X-Category: Library
-## X-License: Intention is to release into public domain once permission from above authors is received.  Meanwhile their licensing provisions prevail.
+
 
 LibStub\LibStub.lua
 CallbackHandler-1.0\CallbackHandler-1.0.lua
