@@ -14,17 +14,17 @@ end
 
 LibKeyBoundLocale10 = {
 	REVISION = REVISION;
-	Enabled = "Tastenzuweisung Modus aktiviert";
-	Disabled = "Tastenzuweisung Modus deaktiviert";
-	ClearTip = format("Drücke %s um alle Tastenzuweisungen zu löschen", GetBindingText("ESCAPE", "KEY_"));
+	Enabled = "Tastenzuweisungsmodus aktiviert";
+	Disabled = "Tastenzuweisungsmodus deaktiviert";
+	ClearTip = format("Drücke %s, um alle Tastenzuweisungen zu löschen", GetBindingText("ESCAPE", "KEY_"));
 	NoKeysBoundTip = "Keine Tasten zugewiesen";
-	ClearedBindings = "Entferne alle Zuweisungen von %s";
+	ClearedBindings = "Alle Zuweisungen von %s wurden entfernt";
 	BoundKey = "Setze %s zu %s";
-	UnboundKey = "Entferne %s von %s";
+	UnboundKey = "%s wurde von %s entfernt";
 	CannotBindInCombat = "Kann Tasten nicht im Kampf zuweisen";
-	CombatBindingsEnabled = "Verlasse Kampf, Tastenzuweisung Modus aktiviert";
-	CombatBindingsDisabled = "Beginne Kampf, Tastenzuweisung Modus deaktiviert";
-	BindingsHelp = "Schwebe mit der Maus über einem Schalter. Drück dann eine Taste um sie zuzuweisen. Um die Belegung der Taste wieder zu löschen drück %s.";
+	CombatBindingsEnabled = "Verlasse Kampf, Tastenzuweisungsmodus aktiviert";
+	CombatBindingsDisabled = "Beginne Kampf, Tastenzuweisungsmodus deaktiviert";
+	BindingsHelp = "Schwebe mit der Maus über einem Schalter. Drück dann eine Taste, um sie zuzuweisen. Um die Belegung der Taste wieder zu löschen, drücke %s.";
 
 	-- This is the short display version you see on the Button
 	["Alt"] = "A",
